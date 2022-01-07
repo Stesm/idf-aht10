@@ -10,36 +10,36 @@
 #define AHT10_NORMAL_MODE       0b00110011
 #define AHT10_NOP               0b00000000
 
-static void AHTRead();
+static void vAHTRead();
 static uint8_t readBit(uint8_t value, uint8_t bit_num);
 static char *int_to_bits(uint8_t value, char *buff);
-static void sendCMD(uint8_t commands[3], int delay);
-static esp_err_t readData(uint8_t *data, uint8_t len);
+static void vI2CCmd(uint8_t commands[3], int delay);
+static esp_err_t xI2CRead(uint8_t *data, uint8_t len);
 
 uint8_t measure[6] = {0, 0, 0, 0, 0, 0};
 uint32_t raw_data[3] = {0, 0, 0};
 TickType_t latst_read = 0;
 
-void AHTStatus() {
+void vAHTStatus() {
     uint8_t data;
 
-    readData(&data, 1);
+    xI2CRead(&data, 1);
     ESP_LOGI("STATUS", "Bisy bit - %d, calibration bit - %d", readBit(data, 7), readBit(data, 3));
 }
 
-void AHTInit() 
+void vAHTInit() 
 {
     vTaskDelay(40/portTICK_RATE_MS);
 
     uint8_t normalMode[3] = {0xE1, 0x08, 0x00};
-    sendCMD(normalMode, 350);
+    vI2CCmd(normalMode, 350);
 
-    AHTStatus();
+    vAHTStatus();
 }
 
-float AHTTempetarure() 
+float fAHTTempetarure() 
 {
-    AHTRead();
+    vAHTRead();
     if (raw_data[2] == 0) {
         return 0.0;
     }
@@ -47,9 +47,9 @@ float AHTTempetarure()
     return ((float) raw_data[2] * 200 / 0x100000) - 50;
 }
 
-float AHTHumidity() 
+float fAHTHumidity() 
 {
-    AHTRead();
+    vAHTRead();
     if (raw_data[1] == 0) {
         return 0.0;
     }
@@ -57,22 +57,22 @@ float AHTHumidity()
     return ((float) raw_data[1] / 0x100000) * 100;
 }
 
-static void AHTStartMeasure()
+static void vAHTStartMeasure()
 {
     uint8_t command[3] = {0xAC, 0x33, 0x00};
-    sendCMD(command, 150);
+    vI2CCmd(command, 150);
 }
 
-static void AHTRead() {
+static void vAHTRead() {
     if (latst_read != 0 && (latst_read + 1000) > xTaskGetTickCount()) {
         ESP_LOGI("Measure", "Shown cached data");
         return;
     }
 
-    AHTStartMeasure();
+    vAHTStartMeasure();
     uint8_t data[6] = {0, 0, 0, 0, 0, 0};
 
-    esp_err_t measure_read = readData(data, 6);
+    esp_err_t measure_read = xI2CRead(data, 6);
     uint8_t *calc_data;
     char buff[9];
 
@@ -118,7 +118,7 @@ static char *int_to_bits(uint8_t value, char *buff)
     return buff;
 }
 
-static void sendCMD(uint8_t commands[3], int delay) {
+static void vI2CCmd(uint8_t commands[3], int delay) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
 
     I2C_CMD(i2c_master_start(cmd), "Start");
@@ -133,7 +133,7 @@ static void sendCMD(uint8_t commands[3], int delay) {
     vTaskDelay(delay/portTICK_RATE_MS);
 }
 
-static esp_err_t readData(uint8_t *data, uint8_t len) {
+static esp_err_t xI2CRead(uint8_t *data, uint8_t len) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
 
     I2C_CMD(i2c_master_start(cmd), "Start");

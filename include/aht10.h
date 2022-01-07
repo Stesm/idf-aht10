@@ -1,7 +1,7 @@
 #pragma once
 
-void AHTStatus();
-void AHTInit();
+void vAHTStatus();
+void vAHTInit();
 
-float AHTTempetarure();
-float AHTHumidity();
+float fAHTTempetarure();
+float fAHTHumidity();
