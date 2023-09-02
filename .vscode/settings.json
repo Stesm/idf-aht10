@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "esp_event.h": "c",
+        "freertos.h": "c",
+        "portable.h": "c",
+        "portmacro.h": "c",
+        "esp_newlib.h": "c",
+        "reent.h": "c",
+        "hap_apple_chars.h": "c",
+        "app_hap_setup_payload.h": "c",
+        "app_wifi.h": "c",
+        "esp_log.h": "c",
+        "hap.h": "c",
+        "hap_fw_upgrade.h": "c",
+        "task.h": "c",
+        "bulb.h": "c",
+        "aht10.h": "c",
+        "hap_apple_servs.h": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "i2c.h": "c",
+        "iot_button.h": "c",
+        "hapc.h": "c",
+        "ledc.h": "c",
+        "gpio.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled",
+    "idf.adapterTargetName": "esp32",
+    "idf.port": "/dev/cu.usbserial-0001"
+}
